@@ -131,12 +131,6 @@ ProgramGuideStyle.textContent = `
         background-color: rgba(255, 255, 255, 1);
     }
 
-    :host .time-box.dark-mode {
-        /*
-        color: white;
-        */
-    }
-
     :host .time-box.morning {
         background-color: pink;
     }
@@ -217,40 +211,6 @@ function getNearStreamIndex(targetTime) {
     return nearIndex;
 }
 
-function isDarkMode() {
-    const bkColor = window.getComputedStyle(document.querySelector(':root')).backgroundColor;
-    //console.log('bkColor = ' + bkColor);
-
-    let m = /^rgba?\(\s*(?<R>\d+)\s*,\s*(?<G>\d+)\s*,\s*(?<B>\d+)\s*(?:\)|,\s*(?<A>\d+(?:\.\d+)?))/.exec(bkColor);
-    if (m) {
-        const a = Number(m.groups.A ?? '1');
-        //console.log('a = ' + a);
-        if (a === 0) {
-            return false;
-        }
-        const r = Number(m.groups.R);
-        const g = Number(m.groups.G);
-        const b = Number(m.groups.B);
-        const L = (Math.max(r, g, b) + Math.min(r, g, b)) / 2;
-        //console.log('L = ' + L);
-        return L < 127.5;
-    }
-
-    m = /^hsla?\(\s*\d+(?:deg)?\s*,\s*\d+%?\s*,\s*(?<L>\d+)%?\s*(?:\)|[,\/]\s*(?<A>\d+(?:\.\d+)?))/.exec(bkColor);
-    if (m) {
-        const a = Number(m.groups.A ?? '1');
-        //console.log('a = ' + a);
-        if (a === 0) {
-            return false;
-        }
-        const L = Number(m.groups.L);
-        //console.log('L = ' + L);
-        return L < 50;
-    }
-
-    return ['black'].includes(bkColor);
-}
-
 function getTimePeriod(date) {
     const h = date.getHours();
     if (h < 6) {
@@ -294,8 +254,6 @@ class ProgramGuideClass {
         this._streamIndexData = getNearStreamIndex(Date.now());
         //console.log('nearIndex', this._streamIndexData);
 
-        const darkMode = isDarkMode();
-
         const onloadPromises = [];
         let lastDate = -1;
 
@@ -315,10 +273,6 @@ class ProgramGuideClass {
             const timeBox = document.createElement('span');
             timeBox.classList.add('time-box');
             streamBox.appendChild(timeBox);
-
-            if (darkMode) {
-                timeBox.classList.add('dark-mode');
-            }
 
             const period = getTimePeriod(stream.startDate);
             timeBox.classList.add(period);
