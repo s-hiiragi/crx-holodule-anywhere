@@ -112,7 +112,7 @@ ProgramGuideStyle.textContent = `
         background-color: skyblue;
     }
     :host .time-box.night {
-        background-color: slateblue;
+        background-color: mediumpurple;
     }
 
     :host .time-box .time {
