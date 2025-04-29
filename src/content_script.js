@@ -219,11 +219,34 @@ class ProgramGuideClass {
 
     // 画像のロード処理に時間がかかるのでconstructorから切り離す
     async loadStream(streams) {
-        this._streams = streams;
+        // 前回の内容を消す
+        Array.from(this._shadowRoot.querySelectorAll('.stream-box')).forEach(e => {
+            e.remove();
+        });
+
+        if (this._streams.length === 0) {
+            // 初回ロード時
 
             // 現在時刻に近い配信を選択する
             this._streamIndexData = getNearStreamIndex(streams, Date.now());
-        //console.log('nearIndex', this._streamIndexData);
+        }
+        else {
+            // 2回目以降のロード時
+            // 前回選択していた配信を選択し直す
+            const lastSelectedStream = this._streams[this._streamIndexData];
+
+            const foundStreamIndex = this._streams.findIndex(s => s.streamUrl === lastSelectedStream.streamUrl);
+            if (foundStreamIndex === -1) {
+                // 前回選択していた配信が消えた場合
+                // 現在時刻に近い配信を再選択する
+                this._streamIndexData = getNearStreamIndex(streams, Date.now());
+            }
+            else {
+                this._streamIndexData = foundStreamIndex;
+            }
+        }
+
+        this._streams = streams;
 
         const onloadPromises = [];
         let lastDate = -1;
@@ -402,14 +425,27 @@ const hololiveAllNames = [
     ...hololiveDEV_ISNames
 ];
 
-let ProgramGuide = null;
+let ProgramGuide = new ProgramGuideClass();
+let lastFetchTime = 0;
 
-async function initProgramGuide() {
-    if (ProgramGuide !== null) {
+async function updateProgramGuide() {
+    // 非表示のときだけ取得する
+    if (ProgramGuide.shown) {
         return;
     }
 
-    //console.log('holodule fetch start');
+    // 一定時間内は配信データを更新しない
+    const fetchTime = Date.now();
+    const fetchCacheThreshold = 1 * 60 * 1000;
+
+    if (fetchTime - lastFetchTime < fetchCacheThreshold) {
+        console.log('use cache');
+        return;
+    }
+
+    lastFetchTime = fetchTime;
+
+    console.log('holodule fetch start');
     let streams = await fetchStreams();
 
     // ホロライブのみフィルタ
@@ -419,14 +455,13 @@ async function initProgramGuide() {
 
     //console.log('holodule fetch end');
 
-    ProgramGuide = new ProgramGuideClass();
     await ProgramGuide.loadStream(streams);
 }
 
 const globalKeyActions = [
-    { code: 'KeyE',                  action: async() => { await initProgramGuide(); ProgramGuide.toggle(); } },
-    { code: 'KeyZ',                  action: async() => { await initProgramGuide(); ProgramGuide.toggle(); } },
-    { code: 'KeyH',                  action: async() => { await initProgramGuide(); ProgramGuide.toggle(); } },
+    { code: 'KeyE',                  action: async() => { await updateProgramGuide(); ProgramGuide.toggle(); } },
+    { code: 'KeyZ',                  action: async() => { await updateProgramGuide(); ProgramGuide.toggle(); } },
+    { code: 'KeyH',                  action: async() => { await updateProgramGuide(); ProgramGuide.toggle(); } },
     { code: 'Escape',                condition: () => ProgramGuide?.shown, action: () => ProgramGuide.hide() },
 //  { code: 'ArrowUp',               condition: () => ProgramGuide?.shown, action: () => ProgramGuide.selectPrevHour() },
 //  { code: 'ArrowDown',             condition: () => ProgramGuide?.shown, action: () => ProgramGuide.selectNextHour() },
