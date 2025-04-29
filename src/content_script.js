@@ -127,10 +127,27 @@ ProgramGuideStyle.textContent = `
 
     :host .time-box {
         display: block;
+        color: black;
+        background-color: rgba(255, 255, 255, 1);
     }
 
     :host .time-box.dark-mode {
+        /*
         color: white;
+        */
+    }
+
+    :host .time-box.morning {
+        background-color: pink;
+    }
+    :host .time-box.afternoon {
+        background-color: skyblue;
+    }
+    :host .time-box.evening {
+        background-color: mediumpurple;
+    }
+    :host .time-box.night {
+        background-color: slateblue;
     }
 
     :host .time-box .time {
@@ -204,8 +221,13 @@ function isDarkMode() {
     const bkColor = window.getComputedStyle(document.querySelector(':root')).backgroundColor;
     //console.log('bkColor = ' + bkColor);
 
-    let m = /^rgba?\(\s*(?<R>\d+)\s*,\s*(?<G>\d+)\s*,\s*(?<B>\d+)\s*[,)]/.exec(bkColor);
+    let m = /^rgba?\(\s*(?<R>\d+)\s*,\s*(?<G>\d+)\s*,\s*(?<B>\d+)\s*(?:\)|,\s*(?<A>\d+(?:\.\d+)?))/.exec(bkColor);
     if (m) {
+        const a = Number(m.groups.A ?? '1');
+        //console.log('a = ' + a);
+        if (a === 0) {
+            return false;
+        }
         const r = Number(m.groups.R);
         const g = Number(m.groups.G);
         const b = Number(m.groups.B);
@@ -214,13 +236,38 @@ function isDarkMode() {
         return L < 127.5;
     }
 
-    m = /^hsla?\(\s*\d+(?:deg)?\s*,\s*\d+%?\s*,\s*(?<L>\d+)%?\s*[,\/)]/.exec(bkColor);
+    m = /^hsla?\(\s*\d+(?:deg)?\s*,\s*\d+%?\s*,\s*(?<L>\d+)%?\s*(?:\)|[,\/]\s*(?<A>\d+(?:\.\d+)?))/.exec(bkColor);
     if (m) {
-        //console.log('L = ' + m.groups.L);
-        return Number(m['L']) < 50;
+        const a = Number(m.groups.A ?? '1');
+        //console.log('a = ' + a);
+        if (a === 0) {
+            return false;
+        }
+        const L = Number(m.groups.L);
+        //console.log('L = ' + L);
+        return L < 50;
     }
 
     return ['black'].includes(bkColor);
+}
+
+function getTimePeriod(date) {
+    const h = date.getHours();
+    if (h < 6) {
+        return 'night';
+    }
+    else if (h < 12) {
+        return 'morning';
+    }
+    else if (h < 18) {
+        return 'afternoon';
+    }
+    else if (h < 21) {
+        return 'evening';
+    }
+    else {
+        return 'night';
+    }
 }
 
 class ProgramGuideClass {
@@ -272,6 +319,9 @@ class ProgramGuideClass {
             if (darkMode) {
                 timeBox.classList.add('dark-mode');
             }
+
+            const period = getTimePeriod(stream.startDate);
+            timeBox.classList.add(period);
 
             const t = document.createElement('span');
             t.classList.add('time');
