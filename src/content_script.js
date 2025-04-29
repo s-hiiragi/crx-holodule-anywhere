@@ -299,7 +299,7 @@ class ProgramClass {
     selectPrevHour() {}  // TODO 実装する
     selectNextHour() {}  // TODO 実装する
 
-    openStream(options) {
+    openStream(options = {}) {
         if (options.newTab) {
             window.open(this._streams[this._streamIndex].streamUrl, '_blank');
             this.hide();
