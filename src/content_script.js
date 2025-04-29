@@ -106,10 +106,10 @@ ProgramGuideStyle.textContent = `
         background-color: pink;
     }
     :host .time-box.afternoon {
-        background-color: skyblue;
+        background-color: lightgreen;
     }
     :host .time-box.evening {
-        background-color: mediumpurple;
+        background-color: skyblue;
     }
     :host .time-box.night {
         background-color: slateblue;
@@ -221,8 +221,8 @@ class ProgramGuideClass {
     async loadStream(streams) {
         this._streams = streams;
 
-        // 現在時刻に近い配信を選択する
-        this._streamIndexData = getNearStreamIndex(streams, Date.now());
+            // 現在時刻に近い配信を選択する
+            this._streamIndexData = getNearStreamIndex(streams, Date.now());
         //console.log('nearIndex', this._streamIndexData);
 
         const onloadPromises = [];
