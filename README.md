@@ -1,6 +1,8 @@
 # Holodule Anywhere
 
-ショートカットキーでホロジュールを表示するChrome拡張機能
+![画面イメージ](doc/screenshot_ui.png)
+
+ページの上にホロジュールを表示できるChrome拡張機能
 
 ## 更新履歴
 
