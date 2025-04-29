@@ -426,7 +426,6 @@ const hololiveAllNames = [
 ];
 
 let ProgramGuide = new ProgramGuideClass();
-let lastFetchTime = 0;
 
 async function updateProgramGuide() {
     // 非表示のときだけ取得する
@@ -434,18 +433,7 @@ async function updateProgramGuide() {
         return;
     }
 
-    // 一定時間内は配信データを更新しない
-    const fetchTime = Date.now();
-    const fetchCacheThreshold = 1 * 60 * 1000;
-
-    if (fetchTime - lastFetchTime < fetchCacheThreshold) {
-        console.log('use cache');
-        return;
-    }
-
-    lastFetchTime = fetchTime;
-
-    console.log('holodule fetch start');
+    //console.log('holodule fetch start');
     let streams = await fetchStreams();
 
     // ホロライブのみフィルタ
