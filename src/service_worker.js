@@ -1,3 +1,6 @@
+// CORS制限回避のために、
+// ホロジュールのHTMLのfetchはバックグラウンド、parseはフォアグラウンドで行う
+
 async function fetchScheduleHtml() {
     // 毎回fetchすると1秒くらい待たされるのでキャッシュする
     const fetchTime = Date.now();
@@ -29,18 +32,6 @@ async function fetchScheduleHtml() {
     return html;
 }
 
-async function writeSchedule() {
-    // TODO ホロジュールデータをstorageに保存する
-}
-
-async function readSchedule() {
-    // TODO ホロジュールデータをstorageから読みだす
-    return null;
-}
-
-// CORS制限回避のために、
-// fetchはバックグラウンド、parseはフォアグラウンドで行う
-
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const [command, ...args] = message;
     console.log(command, args);
@@ -49,14 +40,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // ホロジュールのhtmlを取得
     case 'fetchScheduleHtml':
         fetchScheduleHtml().then(html => sendResponse(html));
-        return true;
-    // ホロジュールデータを保存
-    case 'writeSchedule':
-        writeSchedule(args[0]).then(() => sendResponse());
-        return true;
-    // ホロジュールデータを取得
-    case 'readSchedule':
-        readSchedule().then(schedule => sendResponse(schedule));
         return true;
     }
 });

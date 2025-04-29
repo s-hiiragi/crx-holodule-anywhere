@@ -379,9 +379,6 @@ class ProgramGuideClass {
         }
     }
 
-    selectPrevHour() {}  // TODO 実装する
-    selectNextHour() {}  // TODO 実装する
-
     openStream(options = {}) {
         if (options.newTab) {
             window.open(this._streams[this._streamIndex].streamUrl, '_blank');
@@ -451,10 +448,6 @@ const globalKeyActions = [
     { code: 'KeyZ',                  action: async() => { await updateProgramGuide(); ProgramGuide.toggle(); } },
     { code: 'KeyH',                  action: async() => { await updateProgramGuide(); ProgramGuide.toggle(); } },
     { code: 'Escape',                condition: () => ProgramGuide?.shown, action: () => ProgramGuide.hide() },
-//  { code: 'ArrowUp',               condition: () => ProgramGuide?.shown, action: () => ProgramGuide.selectPrevHour() },
-//  { code: 'ArrowDown',             condition: () => ProgramGuide?.shown, action: () => ProgramGuide.selectNextHour() },
-//  { code: 'KeyW',                  condition: () => ProgramGuide?.shown, action: () => ProgramGuide.selectPrevHour() },
-//  { code: 'KeyS',                  condition: () => ProgramGuide?.shown, action: () => ProgramGuide.selectNextHour() },
     { code: 'ArrowLeft',             condition: () => ProgramGuide?.shown, action: () => ProgramGuide.scrollBy(-1) },
     { code: 'ArrowRight',            condition: () => ProgramGuide?.shown, action: () => ProgramGuide.scrollBy(+1) },
     { code: 'KeyA',                  condition: () => ProgramGuide?.shown, action: () => ProgramGuide.scrollBy(-1) },
@@ -468,9 +461,6 @@ const globalKeyActions = [
     { code: 'Enter', shiftKey: true, condition: () => ProgramGuide?.shown, action: () => ProgramGuide.openStream({newTab: true}) },
     { code: 'Space', shiftKey: true, condition: () => ProgramGuide?.shown, action: () => ProgramGuide.openStream({newTab: true}) }
 ];
-
-// Home
-// End
 
 function globalKeyEventListener(event) {
     //console.log(event.code, event.isComposing, event, document.activeElement);
