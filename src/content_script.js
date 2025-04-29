@@ -100,9 +100,9 @@ let Streams = [
      imageUrl: 'https://img.youtube.com/vi/sxhryjeUXlk/mqdefault.jpg'}
 ];
 
-const ProgramStyle = document.createElement('style');
+const ProgramGuideStyle = document.createElement('style');
 
-ProgramStyle.textContent = `
+ProgramGuideStyle.textContent = `
     :host {
         position: fixed;
         top: 0px;
@@ -173,7 +173,7 @@ function getNearStreamIndex(targetTime) {
     return nearIndex;
 }
 
-class ProgramClass {
+class ProgramGuideClass {
 
     constructor() {
         this._streams = [];  // loadStream()で読み込む
@@ -184,7 +184,7 @@ class ProgramClass {
         this._container.style.visibility = 'hidden';  // 初期状態は非表示
 
         this._shadowRoot = this._container.attachShadow({ mode: 'open' });
-        this._shadowRoot.appendChild(ProgramStyle);
+        this._shadowRoot.appendChild(ProgramGuideStyle);
 
         document.body.appendChild(this._container);
     }
@@ -342,10 +342,10 @@ const hololiveAllNames = [
     ...hololiveDEV_ISNames
 ];
 
-let Program = null;
+let ProgramGuide = null;
 
-async function initProgram() {
-    if (Program !== null) {
+async function initProgramGuide() {
+    if (ProgramGuide !== null) {
         return;
     }
 
@@ -360,31 +360,31 @@ async function initProgram() {
 
     //console.log('holodule fetch end');
 
-    Program = new ProgramClass();
-    await Program.loadStream(Streams);
+    ProgramGuide = new ProgramGuideClass();
+    await ProgramGuide.loadStream(Streams);
 }
 
 const globalKeyActions = [
-    { code: 'KeyE',                  action: async() => { await initProgram(); Program.toggle(); } },
-    { code: 'KeyZ',                  action: async() => { await initProgram(); Program.toggle(); } },
-    { code: 'KeyH',                  action: async() => { await initProgram(); Program.toggle(); } },
-    { code: 'Escape',                condition: () => Program?.shown, action: () => Program.hide() },
-//  { code: 'ArrowUp',               condition: () => Program?.shown, action: () => Program.selectPrevHour() },
-//  { code: 'ArrowDown',             condition: () => Program?.shown, action: () => Program.selectNextHour() },
-//  { code: 'KeyW',                  condition: () => Program?.shown, action: () => Program.selectPrevHour() },
-//  { code: 'KeyS',                  condition: () => Program?.shown, action: () => Program.selectNextHour() },
-    { code: 'ArrowLeft',             condition: () => Program?.shown, action: () => Program.scrollBy(-1) },
-    { code: 'ArrowRight',            condition: () => Program?.shown, action: () => Program.scrollBy(+1) },
-    { code: 'KeyA',                  condition: () => Program?.shown, action: () => Program.scrollBy(-1) },
-    { code: 'KeyD',                  condition: () => Program?.shown, action: () => Program.scrollBy(+1) },
-    { code: 'Tab', shiftKey: true,   condition: () => Program?.shown, action: () => Program.scrollBy(-1) },
-    { code: 'Tab',                   condition: () => Program?.shown, action: () => Program.scrollBy(+1) },
-    { code: 'Home',                  condition: () => Program?.shown, action: () => Program.scrollTo(0) },
-    { code: 'End',                   condition: () => Program?.shown, action: () => Program.scrollTo(-1) },
-    { code: 'Enter',                 condition: () => Program?.shown, action: () => Program.openStream() },
-    { code: 'Space',                 condition: () => Program?.shown, action: () => Program.openStream() },
-    { code: 'Enter', shiftKey: true, condition: () => Program?.shown, action: () => Program.openStream({newTab: true}) },
-    { code: 'Space', shiftKey: true, condition: () => Program?.shown, action: () => Program.openStream({newTab: true}) }
+    { code: 'KeyE',                  action: async() => { await initProgramGuide(); ProgramGuide.toggle(); } },
+    { code: 'KeyZ',                  action: async() => { await initProgramGuide(); ProgramGuide.toggle(); } },
+    { code: 'KeyH',                  action: async() => { await initProgramGuide(); ProgramGuide.toggle(); } },
+    { code: 'Escape',                condition: () => ProgramGuide?.shown, action: () => ProgramGuide.hide() },
+//  { code: 'ArrowUp',               condition: () => ProgramGuide?.shown, action: () => ProgramGuide.selectPrevHour() },
+//  { code: 'ArrowDown',             condition: () => ProgramGuide?.shown, action: () => ProgramGuide.selectNextHour() },
+//  { code: 'KeyW',                  condition: () => ProgramGuide?.shown, action: () => ProgramGuide.selectPrevHour() },
+//  { code: 'KeyS',                  condition: () => ProgramGuide?.shown, action: () => ProgramGuide.selectNextHour() },
+    { code: 'ArrowLeft',             condition: () => ProgramGuide?.shown, action: () => ProgramGuide.scrollBy(-1) },
+    { code: 'ArrowRight',            condition: () => ProgramGuide?.shown, action: () => ProgramGuide.scrollBy(+1) },
+    { code: 'KeyA',                  condition: () => ProgramGuide?.shown, action: () => ProgramGuide.scrollBy(-1) },
+    { code: 'KeyD',                  condition: () => ProgramGuide?.shown, action: () => ProgramGuide.scrollBy(+1) },
+    { code: 'Tab', shiftKey: true,   condition: () => ProgramGuide?.shown, action: () => ProgramGuide.scrollBy(-1) },
+    { code: 'Tab',                   condition: () => ProgramGuide?.shown, action: () => ProgramGuide.scrollBy(+1) },
+    { code: 'Home',                  condition: () => ProgramGuide?.shown, action: () => ProgramGuide.scrollTo(0) },
+    { code: 'End',                   condition: () => ProgramGuide?.shown, action: () => ProgramGuide.scrollTo(-1) },
+    { code: 'Enter',                 condition: () => ProgramGuide?.shown, action: () => ProgramGuide.openStream() },
+    { code: 'Space',                 condition: () => ProgramGuide?.shown, action: () => ProgramGuide.openStream() },
+    { code: 'Enter', shiftKey: true, condition: () => ProgramGuide?.shown, action: () => ProgramGuide.openStream({newTab: true}) },
+    { code: 'Space', shiftKey: true, condition: () => ProgramGuide?.shown, action: () => ProgramGuide.openStream({newTab: true}) }
 ];
 
 // Home
