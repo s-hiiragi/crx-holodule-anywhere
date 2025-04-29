@@ -391,7 +391,7 @@ const globalKeyActions = [
 // End
 
 function globalKeyEventListener(event) {
-    console.log(event.code, event.isComposing, event, document.activeElement);
+    //console.log(event.code, event.isComposing, event, document.activeElement);
 
     // IME入力中判定
     if (event.isComposing || event.key === 'Process' || event.keyCode === 229) {
@@ -400,14 +400,14 @@ function globalKeyEventListener(event) {
 
     // WAI-ARIA role判定
     if (['textbox', 'searchbox', 'combobox'].includes(event.target.role)) {
-        console.log('role = ' + event.target.role);
+        //console.log('role = ' + event.target.role);
         return;
     }
 
     // contentEditable有効判定
     // TODO inherit(親の属性を継承)に対応する
     if (['true', 'plaintext-only'].includes(event.target.contentEditable)) {
-        console.log('contentEditable = ' + event.target.contentEditable);
+        //console.log('contentEditable = ' + event.target.contentEditable);
         return;
     }
 
@@ -415,7 +415,7 @@ function globalKeyEventListener(event) {
     // - x.comのGrokのテキストボックスにはWAI-ARIAが設定されておらず、かつkeydownイベントが伝播するため対処する
     const nodeName = event.target.nodeName.toLowerCase();
     if (['input', 'textarea'].includes(nodeName)) {
-        console.log('nodeName = ' + event.target.nodeName);
+        //console.log('nodeName = ' + event.target.nodeName);
         return;
     }
 
