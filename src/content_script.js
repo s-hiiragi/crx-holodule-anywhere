@@ -120,7 +120,35 @@ ProgramGuideStyle.textContent = `
         transform: rotateX(180deg);
     }
 
+    :host .stream-box {
+        display: inline-block;
+        transform: rotateX(180deg);
+    }
+
+    :host .time-box {
+        display: block;
+    }
+
+    :host .time-box.dark-mode {
+        color: white;
+    }
+
+    :host .time-box .time {
+        font-size: 14px;
+    }
+
+    :host .time-box .date {
+        margin-right: 0.5em;
+        font-weight: bold;
+    }
+
+    :host .time-box .name {
+        margin-left: 0.5em;
+        font-size: 12px;
+    }
+
     :host .stream {
+        display: block;
         /* サムネイルを上揃えにする */
         vertical-align: bottom;  /* rotateX(180deg)しているのでtopではなくbottomにする */
     }
@@ -134,16 +162,15 @@ ProgramGuideStyle.textContent = `
         padding: 2px;
         background-color: white;
         border: 1px solid black;
-        transform: rotateX(180deg);
     }
 
-    :host .stream.live img {
+    :host .live img {
         padding: 0px;
         border: 3px solid red;
         border-radius: 4px;
     }
 
-    :host .stream.selected img {
+    :host .selected img {
         /* フォーカス時に表示する枠 */
         padding: 3px;
         background-color: white;
@@ -153,7 +180,7 @@ ProgramGuideStyle.textContent = `
         height: 100px;
     }
 
-    :host .stream.live.selected img {
+    :host .live.selected img {
         background-color: red;
     }
 `;
@@ -171,6 +198,29 @@ function getNearStreamIndex(targetTime) {
         }, [Infinity, 0]);
 
     return nearIndex;
+}
+
+function isDarkMode() {
+    const bkColor = window.getComputedStyle(document.querySelector(':root')).backgroundColor;
+    //console.log('bkColor = ' + bkColor);
+
+    let m = /^rgba?\(\s*(?<R>\d+)\s*,\s*(?<G>\d+)\s*,\s*(?<B>\d+)\s*[,)]/.exec(bkColor);
+    if (m) {
+        const r = Number(m.groups.R);
+        const g = Number(m.groups.G);
+        const b = Number(m.groups.B);
+        const L = (Math.max(r, g, b) + Math.min(r, g, b)) / 2;
+        //console.log('L = ' + L);
+        return L < 127.5;
+    }
+
+    m = /^hsla?\(\s*\d+(?:deg)?\s*,\s*\d+%?\s*,\s*(?<L>\d+)%?\s*[,\/)]/.exec(bkColor);
+    if (m) {
+        //console.log('L = ' + m.groups.L);
+        return Number(m['L']) < 50;
+    }
+
+    return ['black'].includes(bkColor);
 }
 
 class ProgramGuideClass {
@@ -197,21 +247,55 @@ class ProgramGuideClass {
         this._streamIndexData = getNearStreamIndex(Date.now());
         //console.log('nearIndex', this._streamIndexData);
 
+        const darkMode = isDarkMode();
+
         const onloadPromises = [];
+        let lastDate = -1;
 
         for (let stream of this._streams) {
-            const a = document.createElement('a');
-            a.classList.add('stream');
-            a.href = stream.streamUrl;
-            this._shadowRoot.appendChild(a);
+            const streamBox = document.createElement('span');
+            streamBox.classList.add('stream-box');
+            this._shadowRoot.appendChild(streamBox);
 
             if (stream.live) {
-                a.classList.add('live');
+                streamBox.classList.add('live');
             }
 
             if (stream === this._streams[this._streamIndex]) {
-                a.classList.add('selected');
+                streamBox.classList.add('selected');
             }
+
+            const timeBox = document.createElement('span');
+            timeBox.classList.add('time-box');
+            streamBox.appendChild(timeBox);
+
+            if (darkMode) {
+                timeBox.classList.add('dark-mode');
+            }
+
+            const t = document.createElement('span');
+            t.classList.add('time');
+            t.textContent = ('0' + stream.startDate.getHours()).slice(-2) + ':' + ('0' + stream.startDate.getMinutes()).slice(-2);
+            timeBox.appendChild(t);
+
+            if (stream.startDate.getDate() !== lastDate) {
+                const d = document.createElement('span');
+                d.classList.add('date');
+                d.textContent = stream.startDate.getMonth() + '/' + stream.startDate.getDate();
+                t.prepend(d);
+
+                lastDate = stream.startDate.getDate();
+            }
+
+            const n = document.createElement('span');
+            n.classList.add('name');
+            n.textContent = stream.talentName;
+            timeBox.appendChild(n);
+
+            const a = document.createElement('a');
+            a.classList.add('stream');
+            a.href = stream.streamUrl;
+            streamBox.appendChild(a);
 
             const img = document.createElement('img');
 
@@ -245,19 +329,20 @@ class ProgramGuideClass {
     }
 
     _selectStream(index) {
-        const lastSelectedStream = this._shadowRoot.querySelector('.stream.selected');
-        lastSelectedStream.classList.remove('selected');
+        const lastSelectedStreamBox = this._shadowRoot.querySelector('.selected');
+        lastSelectedStreamBox.classList.remove('selected');
 
-        const selectedStream = this._shadowRoot.querySelectorAll('.stream')[index];
-        selectedStream.classList.add('selected');
-        selectedStream.scrollIntoView();
-        selectedStream.focus();
+        const selectedStreamBox = this._shadowRoot.querySelectorAll('.stream-box')[index];
+        selectedStreamBox.classList.add('selected');
+        selectedStreamBox.scrollIntoView();
+        selectedStreamBox.focus();
 
         // 選択した配信を中央にスクロール表示する
         const containerWidth = this._container.offsetWidth;
-        const selectedWidth = selectedStream.offsetWidth;
+        const selectedWidth = selectedStreamBox.offsetWidth;
         const halfWidth = (containerWidth - selectedWidth) / 2;
-        const initialLeft = Math.max(selectedStream.offsetLeft - halfWidth, 0);
+        const initialLeft = Math.max(selectedStreamBox.offsetLeft - halfWidth, 0);
+        //console.log('containerWidth=' + containerWidth, ' selectedWidth=' + selectedWidth + ' selectedOffsetLeft=' + selectedStreamBox.offsetLeft);
         this._container.scrollTo(initialLeft, 0);
     }
 
