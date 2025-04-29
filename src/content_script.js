@@ -71,35 +71,6 @@ async function fetchStreams() {
     return streams;
 }
 
-let Streams = [
-   // Sample Data
-   {streamUrl: 'https://www.youtube.com/watch?v=4RYbmR8oJHw',
-     imageUrl: 'https://img.youtube.com/vi/4RYbmR8oJHw/mqdefault.jpg'},
-   {streamUrl: 'https://www.youtube.com/watch?v=JKt4Dbpg3Vw',
-     imageUrl: 'https://img.youtube.com/vi/JKt4Dbpg3Vw/mqdefault.jpg'},
-   {streamUrl: 'https://www.youtube.com/watch?v=YeBTV22C06g',
-     imageUrl: 'https://img.youtube.com/vi/YeBTV22C06g/mqdefault.jpg'},
-   {streamUrl: 'https://www.youtube.com/watch?v=_Ifx-t9UIwM',
-     imageUrl: 'https://img.youtube.com/vi/_Ifx-t9UIwM/mqdefault.jpg'},
-   {streamUrl: 'https://www.youtube.com/watch?v=ZRtpdxWvYTw',
-     imageUrl: 'https://img.youtube.com/vi/ZRtpdxWvYTw/mqdefault.jpg'},
-   {streamUrl: 'https://www.youtube.com/watch?v=AxUY1LV7Q6A',
-     imageUrl: 'https://img.youtube.com/vi/AxUY1LV7Q6A/mqdefault.jpg',
-         live: true},
-   {streamUrl: 'https://www.youtube.com/watch?v=GR82EoZr-fU',
-     imageUrl: 'https://img.youtube.com/vi/GR82EoZr-fU/mqdefault.jpg'},
-   {streamUrl: 'https://www.youtube.com/watch?v=vh3hhmmctkE',
-     imageUrl: 'https://img.youtube.com/vi/vh3hhmmctkE/mqdefault.jpg'},
-   {streamUrl: 'https://www.youtube.com/watch?v=v-2eM7LoNq8',
-     imageUrl: 'https://img.youtube.com/vi/v-2eM7LoNq8/mqdefault.jpg'},
-   {streamUrl: 'https://www.youtube.com/watch?v=ROSrFN_MWxE',
-     imageUrl: 'https://img.youtube.com/vi/ROSrFN_MWxE/mqdefault.jpg'},
-   {streamUrl: 'https://www.youtube.com/watch?v=1IaFnJE7JsE',
-     imageUrl: 'https://img.youtube.com/vi/1IaFnJE7JsE/mqdefault.jpg'},
-   {streamUrl: 'https://www.youtube.com/watch?v=sxhryjeUXlk',
-     imageUrl: 'https://img.youtube.com/vi/sxhryjeUXlk/mqdefault.jpg'}
-];
-
 const ProgramGuideStyle = document.createElement('style');
 
 ProgramGuideStyle.textContent = `
@@ -196,8 +167,8 @@ ProgramGuideStyle.textContent = `
     }
 `;
 
-function getNearStreamIndex(targetTime) {
-    const [_, nearIndex] = Streams.reduce(
+function getNearStreamIndex(streams, targetTime) {
+    const [_, nearIndex] = streams.reduce(
         ([maxDiff, nearIndex], currStream, currIndex) => {
             lastCurrStream = currStream;
             const diff = Math.abs(targetTime - currStream.startDate.getTime());
@@ -251,7 +222,7 @@ class ProgramGuideClass {
         this._streams = streams;
 
         // 現在時刻に近い配信を選択する
-        this._streamIndexData = getNearStreamIndex(Date.now());
+        this._streamIndexData = getNearStreamIndex(streams, Date.now());
         //console.log('nearIndex', this._streamIndexData);
 
         const onloadPromises = [];
@@ -445,12 +416,11 @@ async function initProgramGuide() {
     streams = streams.filter(stream => {
         return hololiveAllNames.includes(stream.talentName);
     });
-    Streams.splice(0, Streams.length, ...streams);
 
     //console.log('holodule fetch end');
 
     ProgramGuide = new ProgramGuideClass();
-    await ProgramGuide.loadStream(Streams);
+    await ProgramGuide.loadStream(streams);
 }
 
 const globalKeyActions = [
