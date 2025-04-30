@@ -1,3 +1,7 @@
+async function sendMessage(command, ...args) {
+    return await chrome.runtime.sendMessage([command, args]);
+}
+
 function extractStreams(doc) {
     const containers = Array.from(doc.querySelectorAll('#all > .container > .row > div'));
 
@@ -58,7 +62,7 @@ function extractStreams(doc) {
 }
 
 async function fetchStreams() {
-    const text = await chrome.runtime.sendMessage(['fetchScheduleHtml', []]);
+    const text = await sendMessage('fetchScheduleHtml');
     //console.log('text', text);
 
     const doc = new DOMParser().parseFromString(text, 'text/html');
@@ -434,8 +438,17 @@ async function updateProgramGuide() {
     let streams = await fetchStreams();
 
     // ホロライブのみフィルタ
+    const filterOptions = (await sendMessage('queryOptions')).filter;
+    //console.log('filterOptions', filterOptions);
+
+    // 有効なグループ名を取り出す
+    const enableGroups = Object.entries(filterOptions).filter(([k,v]) => v).map(([k,v]) => k);
+
+    // グループ名をタレント名に変換する
+    const enableTalentNames = enableGroups.map(g => talentNamesByGroup[g]).flat();
+
     streams = streams.filter(stream => {
-        return hololiveAllNames.includes(stream.talentName);
+        return enableTalentNames.includes(stream.talentName);
     });
 
     //console.log('holodule fetch end');
