@@ -239,7 +239,7 @@ class ProgramGuideClass {
             // 前回選択していた配信を選択し直す
             const lastSelectedStream = this._streams[this._streamIndexData];
 
-            const foundStreamIndex = this._streams.findIndex(s => s.streamUrl === lastSelectedStream.streamUrl);
+            const foundStreamIndex = streams.findIndex(s => s.streamUrl === lastSelectedStream.streamUrl);
             if (foundStreamIndex === -1) {
                 // 前回選択していた配信が消えた場合
                 // 現在時刻に近い配信を再選択する
@@ -332,7 +332,9 @@ class ProgramGuideClass {
 
     _selectStream(index) {
         const lastSelectedStreamBox = this._shadowRoot.querySelector('.selected');
-        lastSelectedStreamBox.classList.remove('selected');
+        if (lastSelectedStreamBox !== null) {
+            lastSelectedStreamBox.classList.remove('selected');
+        }
 
         const selectedStreamBox = this._shadowRoot.querySelectorAll('.stream-box')[index];
         selectedStreamBox.classList.add('selected');
