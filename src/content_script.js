@@ -447,7 +447,8 @@ async function updateProgramGuide() {
     const enableGroups = Object.entries(filterOptions).filter(([k,v]) => v).map(([k,v]) => k);
 
     // グループ名をタレント名に変換する
-    const enableTalentNames = enableGroups.map(g => talentNamesByGroup[g]).flat();
+    const enableTalentNames = enableGroups.map(g => talentNamesByGroup[g]).flat().
+        filter(name => typeof name !== 'undefined');  // 削除されたグループ名を除く
 
     streams = streams.filter(stream => {
         return enableTalentNames.includes(stream.talentName);
