@@ -32,14 +32,38 @@ async function fetchScheduleHtml() {
     return html;
 }
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    const [command, ...args] = message;
-    console.log(command, args);
+async function queryOptions() {
+    return (await chrome.storage.local.get('options')).options ?? {
+        filter: {},
+        misc: {}
+    };
+}
+
+async function updateOptions(newOptions) {
+    const oldOptions = await queryOptions();
+    const options = { ...oldOptions, ...newOptions };
+    await chrome.storage.local.set({ options: options });
+}
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse_) => {
+    const [command, args] = message;
+    console.log(command, ...args);
+
+    sendResponse = (response) => {
+        console.log('  sendResponse', response);
+        sendResponse_(response);
+    };
 
     switch (command) {
     // ホロジュールのhtmlを取得
     case 'fetchScheduleHtml':
         fetchScheduleHtml().then(html => sendResponse(html));
+        return true;
+    case 'queryOptions':
+        queryOptions().then(options => sendResponse(options));
+        return true;
+    case 'updateOptions':
+        updateOptions(args[0]).then(() => sendResponse());
         return true;
     }
 });
