@@ -279,7 +279,7 @@ class ProgramGuideClass {
             if (stream.startDate.getDate() !== lastDate) {
                 const d = document.createElement('span');
                 d.classList.add('date');
-                d.textContent = stream.startDate.getMonth() + '/' + stream.startDate.getDate();
+                d.textContent = (stream.startDate.getMonth() + 1) + '/' + stream.startDate.getDate();
                 t.prepend(d);
 
                 lastDate = stream.startDate.getDate();
