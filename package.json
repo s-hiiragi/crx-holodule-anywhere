@@ -1,0 +1,26 @@
+{
+  "name": "crx-holodule-anywhere",
+  "version": "1.0.0",
+  "description": "ページの上にホロジュールを表示できるChrome拡張機能",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/s-hiiragi/crx-holodule-anywhere.git"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/s-hiiragi/crx-holodule-anywhere/issues"
+  },
+  "homepage": "https://github.com/s-hiiragi/crx-holodule-anywhere#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.25.1",
+    "eslint": "^9.25.1",
+    "globals": "^16.0.0"
+  }
+}
