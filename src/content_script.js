@@ -1,3 +1,5 @@
+/* global talentNamesByGroup */
+
 async function sendMessage(command, ...args) {
     return await chrome.runtime.sendMessage([command, args]);
 }
@@ -174,7 +176,6 @@ ProgramGuideStyle.textContent = `
 function getNearStreamIndex(streams, targetTime) {
     const [_, nearIndex] = streams.reduce(
         ([maxDiff, nearIndex], currStream, currIndex) => {
-            lastCurrStream = currStream;
             const diff = Math.abs(targetTime - currStream.startDate.getTime());
             if (diff < maxDiff) {
                 return [diff, currIndex];
@@ -395,39 +396,6 @@ class ProgramGuideClass {
     }
 }
 
-const hololiveJPNames = [
-    'ホロライブ',
-    'ときのそら', 'ロボ子さん',   'AZKi',       'さくらみこ', '星街すいせい',
-    'アキロゼ',   '赤井はあと',   '白上フブキ', '夏色まつり',
-    '百鬼あやめ', '癒月ちょこ',   '大空スバル',
-    '大神ミオ',   '猫又おかゆ',   '戌神ころね',
-    '兎田ぺこら', '不知火フレア', '白銀ノエル', '宝鐘マリン',
-    '天音かなた', '角巻わため',   '常闇トワ',   '姫森ルーナ',
-    '雪花ラミィ', '桃鈴ねね',     '尾丸ポルカ', '獅白ぼたん',
-    'ラプラス',   '鷹嶺ルイ',     '博衣こより', '風真いろは'
-];
-const hololiveIDNames = [
-    'Risu',  'Moona', 'Iofi',
-    'Ollie', 'Anya',  'Reine',
-    'Zeta',  'Kaela', 'Kobo'
-];
-const hololiveENNames = [
-    'Calli',     'Kiara',  'Ina',
-    'IRyS',      'Kronii', 'Baelz',
-    'Shiori',    'Bijou',  'Nerissa', 'FUWAMOCO',
-    'Elizabeth', 'Gigi',   'Cecilia', 'Raora'
-];
-const hololiveDEV_ISNames = [
-    '火威青',     '音乃瀬奏',   '一条莉々華', '儒烏風亭らでん', '轟はじめ',
-    '響咲リオナ', '虎金妃笑虎', '水宮枢',     '輪堂千速',       '綺々羅々ヴィヴィ'
-];
-const hololiveAllNames = [
-    ...hololiveJPNames,
-    ...hololiveIDNames,
-    ...hololiveENNames,
-    ...hololiveDEV_ISNames
-];
-
 let ProgramGuide = new ProgramGuideClass();
 
 async function updateProgramGuide() {
@@ -444,7 +412,7 @@ async function updateProgramGuide() {
     //console.log('filterOptions', filterOptions);
 
     // 有効なグループ名を取り出す
-    const enableGroups = Object.entries(filterOptions).filter(([k,v]) => v).map(([k,v]) => k);
+    const enableGroups = Object.entries(filterOptions).filter(([_,v]) => v).map(([k,_]) => k);
 
     // グループ名をタレント名に変換する
     const enableTalentNames = enableGroups.map(g => talentNamesByGroup[g]).flat().
@@ -507,7 +475,7 @@ function globalKeyEventListener(event) {
         return;
     }
 
-    for (a of globalKeyActions) {
+    for (let a of globalKeyActions) {
         if (event.code === a.code &&
             event.altKey === !!a.altKey &&
             event.ctrlKey === !!a.ctrlKey &&

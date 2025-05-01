@@ -1,5 +1,5 @@
 // 注：各key同士でvalueが重複しないこと (いずれかのkeyの設定がfalseのときにタレントが非表示となってしまうため)
-const talentNamesByGroup = {
+const talentNamesByGroup = { // eslint-disable-line no-unused-vars
     'hololive_jp': [],
     'hololive_jp_official': ['ホロライブ', 'Blue Journey'],
     'hololive_jp_gen0': [],

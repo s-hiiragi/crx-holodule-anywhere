@@ -49,7 +49,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse_) => {
     const [command, args] = message;
     console.log(command, ...args);
 
-    sendResponse = (response) => {
+    const sendResponse = (response) => {
         if (command === 'fetchScheduleHtml') {
             console.log('  sendResponse', '... (typeof ' + (typeof response) + ')');
         } else {
